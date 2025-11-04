@@ -30,13 +30,14 @@ if ($method === 'POST' && $path === 'register') {
   $in = json_input();
   $email = filter_var($in['email'] ?? '', FILTER_VALIDATE_EMAIL);
   $password = (string)($in['password'] ?? '');
+  $name = trim((string)($in['name'] ?? '')) ?: null;
   if (!$email || strlen($password) < 8) {
     http_response_code(400);
     echo json_encode(['ok' => false, 'error' => 'validation']);
     exit;
   }
   try {
-    $uid = Auth::register($email, $password);
+    $uid = Auth::register($email, $password, $name);
     echo json_encode(['ok' => true, 'user_id' => $uid]);
   } catch (Throwable $e) {
     http_response_code(400);
@@ -78,7 +79,8 @@ if ($method === 'GET' && $path === 'me') {
   $uid = Auth::userId();
   if (!$uid) { http_response_code(401); echo json_encode(['ok'=>false]); exit; }
   $email = Auth::userEmail();
-  echo json_encode(['ok' => true, 'email' => $email]);
+  $name = Auth::userName();
+  echo json_encode(['ok' => true, 'email' => $email, 'name' => $name]);
   exit;
 }
 

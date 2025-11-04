@@ -56,6 +56,38 @@ Database:
 - `APP_ENV=production`, `APP_DEBUG=false`
 - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
 - `SESSION_NAME` (optional), `CSRF_SECRET` (required)
+- `APP_URL` (e.g., `https://your-domain.com`)
+- Email (optional): `MAIL_FROM` (default: `noreply@your-domain`), `MAIL_REPLY_TO` (optional)
+
+### Email Setup
+
+The app uses PHP's `mail()` function for password reset emails. To check if it works:
+
+1. **Test on your VPS:**
+   ```bash
+   php -r "mail('your-email@example.com', 'Test', 'Test email'); echo 'Sent';"
+   ```
+   Check your inbox/spam. If it doesn't work:
+
+2. **Check if sendmail/postfix is installed:**
+   ```bash
+   which sendmail
+   # or
+   which postfix
+   ```
+   
+3. **If missing, install postfix (Ubuntu/Debian):**
+   ```bash
+   sudo apt-get update
+   sudo apt-get install postfix
+   ```
+   Choose "Internet Site" during setup and configure your domain.
+
+4. **Alternative: Use SMTP (requires additional PHP library)**
+   - Install PHPMailer or similar
+   - Update `src/Email.php` to use SMTP instead of `mail()`
+
+**Note:** In development, the reset token is returned in the API response for testing. In production, only the email is sent.
 
 ## Security
 

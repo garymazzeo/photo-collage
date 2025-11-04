@@ -16,13 +16,13 @@ export async function login(email: string, password: string): Promise<boolean> {
   return !!data.ok;
 }
 
-export async function register(email: string, password: string): Promise<boolean> {
+export async function register(email: string, password: string, name?: string): Promise<boolean> {
   const token = await getCsrf();
   const res = await fetch('/api/auth.php?action=register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
     credentials: 'include',
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, name }),
   });
   const data = await res.json();
   return !!data.ok;
@@ -41,7 +41,51 @@ export async function me(): Promise<{ email: string } | null> {
   const res = await fetch('/api/auth.php?action=me', { credentials: 'include' });
   if (!res.ok) return null;
   const data = await res.json();
-  return data.ok ? { email: data.email as string } : null;
+  return data.ok ? { email: data.email as string, name: data.name as string | undefined } as any : null;
+}
+
+export async function updateName(name: string): Promise<void> {
+  const token = await getCsrf();
+  await fetch('/api/user.php?action=update-name', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+    credentials: 'include',
+    body: JSON.stringify({ name }),
+  });
+}
+
+export async function changePassword(current: string, next: string): Promise<boolean> {
+  const token = await getCsrf();
+  const res = await fetch('/api/user.php?action=change-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+    credentials: 'include',
+    body: JSON.stringify({ current, next }),
+  });
+  return res.ok;
+}
+
+export async function forgotPassword(email: string): Promise<{ token?: string }> {
+  const token = await getCsrf();
+  const res = await fetch('/api/user.php?action=forgot', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+    credentials: 'include',
+    body: JSON.stringify({ email }),
+  });
+  return await res.json();
+}
+
+export async function resetPassword(resetToken: string, next: string): Promise<boolean> {
+  const token = await getCsrf();
+  const res = await fetch('/api/user.php?action=reset', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+    credentials: 'include',
+    body: JSON.stringify({ token: resetToken, next }),
+  });
+  const data = await res.json();
+  return !!data.ok;
 }
 
 export async function saveProject(p: { title: string; width_px: number; height_px: number; canvas_json: any; id?: number; }): Promise<number> {
