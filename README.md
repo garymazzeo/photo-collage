@@ -148,20 +148,20 @@ Store your `.env` file completely outside the project tree for maximum security:
 1. Create the file in your desired location:
 
    ```bash
-   sudo nano /home/gmazzeo/config/.env
+   sudo nano /home/user-name/config/.env
    # or any path outside the project
    ```
 
 2. Set restrictive permissions:
 
    ```bash
-   sudo chmod 600 /home/gmazzeo/config/.env
-   sudo chown www-data:www-data /home/gmazzeo/config/.env
+   sudo chmod 600 /home/user-name/config/.env
+   sudo chown www-data:www-data /home/user-name/config/.env
    ```
 
 3. Add `ENV_FILE` as a GitHub secret with the full path:
    - Go to your GitHub repo → Settings → Secrets and variables → Actions
-   - Add secret: `ENV_FILE` = `/home/gmazzeo/config/.env`
+   - Add secret: `ENV_FILE` = `/home/user-name/config/.env`
    - The deployment script will automatically use this location
 
 **Note:** If `ENV_FILE` is not set, the script falls back to `$VPS_PATH/shared/.env`
@@ -228,7 +228,7 @@ The app uses PHP's `mail()` function for password reset emails. To check if it w
 ## CI/CD
 
 - Set GitHub secrets: `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`, `VPS_PATH`.
-- Optional: Set `ENV_FILE` secret to use a custom `.env` location (e.g., `/home/gmazzeo/config/.env`)
+- Optional: Set `ENV_FILE` secret to use a custom `.env` location (e.g., `/home/user-name/config/.env`)
 - Push to `main` to deploy. Release is rsynced to `releases/<timestamp>` and `current` symlink is switched.
 - Server should have `/var/www/photo-collage/{current,releases,shared}`.
 - **Environment setup:**
@@ -240,8 +240,8 @@ The app uses PHP's `mail()` function for password reset emails. To check if it w
   sudo chown -R www-data:www-data /var/www/photo-collage/shared
   sudo chmod 600 /var/www/photo-collage/shared/.env
   # Or for custom location:
-  sudo chmod 600 /home/gmazzeo/config/.env
-  sudo chown www-data:www-data /home/gmazzeo/config/.env
+  sudo chmod 600 /home/user-name/config/.env
+  sudo chown www-data:www-data /home/user-name/config/.env
   ```
 
 ## Printing
