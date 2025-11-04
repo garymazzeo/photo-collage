@@ -8,9 +8,12 @@ RELEASE_DIR="$VPS_PATH/releases/$REL"
 # Ensure shared files
 mkdir -p "$VPS_PATH/shared/uploads"
 
-# Symlink shared .env if present
-if [ -f "$VPS_PATH/shared/.env" ]; then
-  ln -sf "$VPS_PATH/shared/.env" "$RELEASE_DIR/config/.env"
+# Symlink .env file if present
+# Check custom location first (via ENV_FILE env var), then fall back to shared location
+ENV_SOURCE="${ENV_FILE:-$VPS_PATH/shared/.env}"
+if [ -f "$ENV_SOURCE" ]; then
+  ln -sf "$ENV_SOURCE" "$RELEASE_DIR/config/.env"
+  echo "Linked .env from: $ENV_SOURCE"
 fi
 
 # Symlink uploads if used later

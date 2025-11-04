@@ -1,0 +1,23 @@
+# Environment files
+config/.env
+.env
+
+# Dependencies
+node_modules/
+frontend/node_modules/
+vendor/
+
+# Build outputs
+public/assets/
+frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+

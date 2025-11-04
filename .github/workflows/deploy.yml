@@ -43,8 +43,13 @@ jobs:
           REMOTE=${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}
           VPS_PATH=${{ secrets.VPS_PATH }}
           REL=${{ steps.prep.outputs.rel }}
+          ENV_FILE="${{ secrets.ENV_FILE }}"
           ssh -o StrictHostKeyChecking=no $REMOTE "mkdir -p $VPS_PATH/releases/$REL $VPS_PATH/shared/uploads"
           rsync $RSYNC_FLAGS ./ $REMOTE:$VPS_PATH/releases/$REL/
-          ssh $REMOTE "bash $VPS_PATH/releases/$REL/deploy/scripts/post_deploy.sh $REL"
+          if [ -n "$ENV_FILE" ]; then
+            ssh $REMOTE "ENV_FILE='$ENV_FILE' bash $VPS_PATH/releases/$REL/deploy/scripts/post_deploy.sh $REL"
+          else
+            ssh $REMOTE "bash $VPS_PATH/releases/$REL/deploy/scripts/post_deploy.sh $REL"
+          fi
 
 

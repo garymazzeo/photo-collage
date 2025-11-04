@@ -1,14 +1,32 @@
 <?php
 declare(strict_types=1);
 
+// Load .env file if it exists (for local development)
+$envFile = __DIR__ . '/.env';
+if (file_exists($envFile) && is_readable($envFile)) {
+  $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+  foreach ($lines as $line) {
+    if (strpos(trim($line), '#') === 0) continue; // Skip comments
+    if (strpos($line, '=') === false) continue;
+    [$key, $value] = explode('=', $line, 2);
+    $key = trim($key);
+    $value = trim($value, " \t\n\r\0\x0B\"'"); // Remove quotes and whitespace
+    if ($key !== '' && !isset($_ENV[$key])) {
+      $_ENV[$key] = $value;
+      putenv("$key=$value");
+    }
+  }
+}
+
 function env(string $key, ?string $default = null): string
 {
-  $val = getenv($key);
+  // Check $_ENV first (from .env file), then getenv() (system env vars)
+  $val = $_ENV[$key] ?? getenv($key);
   if ($val === false || $val === '') {
     if ($default !== null) return $default;
     return '';
   }
-  return $val;
+  return (string) $val;
 }
 
 function app_env(): string { return env('APP_ENV', 'development'); }
