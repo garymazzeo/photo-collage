@@ -11,14 +11,38 @@
   import Editor from '$lib/canvas/Editor.svelte';
   import { project } from '$lib/store/project';
   import { get } from 'svelte/store';
-  import { login, saveProject } from '$lib/api/client';
+  import { login, register, logout, saveProject, me } from '$lib/api/client';
   import '@spectrum-web-components/textfield/sp-textfield.js';
   import '@spectrum-web-components/button/sp-button.js';
   let email = '';
   let password = '';
   let loggedIn = false;
+  let userEmail: string | null = null;
+  let mode: 'login' | 'register' = 'login';
   async function doLogin() {
     loggedIn = await login(email, password);
+    if (loggedIn) {
+      const info = await me();
+      userEmail = info?.email ?? null;
+    }
+  }
+  async function doRegister() {
+    const ok = await register(email, password);
+    if (ok) {
+      loggedIn = await login(email, password);
+      const info = await me();
+      userEmail = info?.email ?? null;
+    }
+  }
+  async function doLogout() {
+    await logout();
+    loggedIn = false;
+    userEmail = null;
+  }
+
+  // On load, check session
+  if (typeof window !== 'undefined') {
+    me().then(info => { if (info) { loggedIn = true; userEmail = info.email; } });
   }
   let lastSavedId: number | null = null;
   function onCanvasJSON(e: any) {
@@ -40,9 +64,16 @@
         {#if !loggedIn}
           <sp-textfield placeholder="Email" type="email" value={email} on:input={(e:any)=> email=e.target.value} />
           <sp-textfield placeholder="Password" type="password" value={password} on:input={(e:any)=> password=e.target.value} />
-          <sp-button variant="primary" on:click={doLogin}>Login</sp-button>
+          {#if mode === 'login'}
+            <sp-button variant="primary" on:click={doLogin}>Login</sp-button>
+            <sp-button on:click={()=> mode='register'}>Register</sp-button>
+          {:else}
+            <sp-button variant="primary" on:click={doRegister}>Create Account</sp-button>
+            <sp-button on:click={()=> mode='login'}>Back to Login</sp-button>
+          {/if}
         {:else}
-          <span>Signed in</span>
+          <span class="chip">{userEmail}</span>
+          <sp-button on:click={doLogout}>Logout</sp-button>
         {/if}
       </div>
     </header>
@@ -59,6 +90,7 @@
   .placeholder { margin: auto; opacity: 0.7; }
   h1 { font-size: 18px; margin: 0; }
   .actions sp-button + sp-button { margin-left: 8px; }
+  .chip { padding: 4px 8px; background: #f2f2f2; border-radius: 999px; margin-right: 8px; font-size: 12px; }
   :global(body) { margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
 </style>
 

@@ -74,6 +74,14 @@ if ($method === 'GET' && $path === 'csrf') {
   exit;
 }
 
+if ($method === 'GET' && $path === 'me') {
+  $uid = Auth::userId();
+  if (!$uid) { http_response_code(401); echo json_encode(['ok'=>false]); exit; }
+  $email = Auth::userEmail();
+  echo json_encode(['ok' => true, 'email' => $email]);
+  exit;
+}
+
 http_response_code(404);
 echo json_encode(['ok' => false, 'error' => 'not_found']);
 

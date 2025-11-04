@@ -4,10 +4,11 @@
   import { fabric } from 'fabric';
   export let canvas: EditorCanvas;
 
-  // Minimal curated list (can be replaced with real assets under public/borders)
+  // Curated list under /public/borders
   const borders = [
-    { id: 'none', name: 'None', url: null },
-    { id: 'simple-black', name: 'Simple Black', url: null },
+    { id: 'none', name: 'None', url: null as string | null },
+    { id: 'classic', name: 'Classic', url: '/borders/frame-classic.svg' },
+    { id: 'ornate', name: 'Ornate', url: '/borders/frame-ornate.svg' },
   ];
 
   let selected = 'none';
@@ -16,17 +17,21 @@
   function applyBorder() {
     if (borderObject) { canvas.remove(borderObject); borderObject = null; }
     if (selected === 'none') { canvas.requestRenderAll(); return; }
-    if (selected === 'simple-black') {
-      const rect = new fabric.Rect({
-        left: 0, top: 0,
-        width: canvas.getWidth(), height: canvas.getHeight(),
-        fill: 'transparent', stroke: '#000', strokeWidth: 8,
-        selectable: false, evented: false
-      });
-      borderObject = rect;
-      canvas.add(rect);
-      rect.moveTo(9999); // ensure on top
-      canvas.requestRenderAll();
+    const def = borders.find(b => b.id === selected);
+    if (def && def.url) {
+      fabric.Image.fromURL(def.url, (img) => {
+        const cw = canvas.getWidth();
+        const ch = canvas.getHeight();
+        img.set({ left: 0, top: 0, selectable: false, evented: false, originX: 'left', originY: 'top' });
+        const scaleX = cw / (img.width || cw);
+        const scaleY = ch / (img.height || ch);
+        img.scaleX = scaleX;
+        img.scaleY = scaleY;
+        borderObject = img;
+        canvas.add(img);
+        img.moveTo(9999);
+        canvas.requestRenderAll();
+      }, { crossOrigin: 'anonymous' });
     }
   }
 </script>

@@ -6,7 +6,7 @@ RewriteEngine On
   Header set Referrer-Policy "strict-origin-when-cross-origin"
   Header set X-Frame-Options "DENY"
   Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
-  Header set Content-Security-Policy "default-src 'self'; img-src 'self' data: blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'"
+  Header set Content-Security-Policy "default-src 'self'; base-uri 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; img-src 'self' data: blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self'; upgrade-insecure-requests"
 </IfModule>
 
 # Serve built assets directly
