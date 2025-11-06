@@ -2,7 +2,8 @@ name: Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
   build-and-deploy:
@@ -51,5 +52,3 @@ jobs:
           else
             ssh $REMOTE "bash $VPS_PATH/releases/$REL/deploy/scripts/post_deploy.sh $REL"
           fi
-
-
