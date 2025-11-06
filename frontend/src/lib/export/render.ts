@@ -1,9 +1,9 @@
-import { fabric } from 'fabric';
+import { Canvas, StaticCanvas } from 'fabric';
 
-export async function exportHighResPNG(editCanvas: fabric.Canvas, widthIn: number, heightIn: number, ppi: number): Promise<Blob> {
+export async function exportHighResPNG(editCanvas: Canvas, widthIn: number, heightIn: number, ppi: number): Promise<Blob> {
   const widthPx = Math.round(widthIn * ppi);
   const heightPx = Math.round(heightIn * ppi);
-  const exportCanvas = new fabric.StaticCanvas(undefined, { backgroundColor: editCanvas.backgroundColor as string });
+  const exportCanvas = new StaticCanvas(undefined, { backgroundColor: editCanvas.backgroundColor as string });
   exportCanvas.setWidth(widthPx);
   exportCanvas.setHeight(heightPx);
   const json = editCanvas.toJSON();

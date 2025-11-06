@@ -4,7 +4,7 @@
   import '@spectrum-web-components/color-area/sp-color-area.js';
   import '@spectrum-web-components/button/sp-button.js';
   import type { EditorCanvas } from '$lib/canvas/fabricSetup';
-  import { fabric } from 'fabric';
+  import { Textbox } from 'fabric';
 
   export let canvas: EditorCanvas;
   let text = 'Text';
@@ -12,7 +12,7 @@
   let color = '#000000';
 
   function addText() {
-    const t = new fabric.Textbox(text, {
+    const t = new Textbox(text, {
       fontSize: size,
       fill: color,
       left: canvas.getWidth() / 2,

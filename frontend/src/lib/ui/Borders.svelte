@@ -1,7 +1,7 @@
 <script lang="ts">
   import '@spectrum-web-components/picker/sp-picker.js';
   import type { EditorCanvas } from '$lib/canvas/fabricSetup';
-  import { fabric } from 'fabric';
+  import { Image, Rect } from 'fabric';
   export let canvas: EditorCanvas;
 
   // Curated list under /public/borders
@@ -12,14 +12,14 @@
   ];
 
   let selected = 'none';
-  let borderObject: fabric.Rect | fabric.Image | null = null;
+  let borderObject: Rect | Image | null = null;
 
   function applyBorder() {
     if (borderObject) { canvas.remove(borderObject); borderObject = null; }
     if (selected === 'none') { canvas.requestRenderAll(); return; }
     const def = borders.find(b => b.id === selected);
     if (def && def.url) {
-      fabric.Image.fromURL(def.url, (img) => {
+      Image.fromURL(def.url, (img) => {
         const cw = canvas.getWidth();
         const ch = canvas.getHeight();
         img.set({ left: 0, top: 0, selectable: false, evented: false, originX: 'left', originY: 'top' });
