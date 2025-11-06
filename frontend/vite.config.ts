@@ -7,6 +7,11 @@ export default defineConfig({
   plugins: [svelte({
     preprocess: vitePreprocess(),
   })],
+  resolve: {
+    alias: {
+      '$lib': resolve(__dirname, './src/lib'),
+    },
+  },
   root: '.',
   build: {
     outDir: resolve(__dirname, '../public/assets'),
