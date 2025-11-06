@@ -116,7 +116,7 @@
     <div class="field-group">
       <sp-textfield 
         value={name} 
-        on:input={(e:any)=> { name=e.target.value; nameError = ''; }}
+        on:input={(e)=> { name=e.target.value; nameError = ''; }}
         invalid={nameError !== ''}
         error-message={nameError || undefined}
       />
@@ -133,7 +133,7 @@
       <sp-textfield 
         type="password" 
         value={current} 
-        on:input={(e:any)=> { current=e.target.value; currentError = ''; }}
+        on:input={(e)=> { current=e.target.value; currentError = ''; }}
         invalid={currentError !== ''}
         error-message={currentError || undefined}
       />
@@ -145,7 +145,7 @@
       <sp-textfield 
         type="password" 
         value={next} 
-        on:input={(e:any)=> { next=e.target.value; nextError = nextConfirmError = ''; }}
+        on:input={(e)=> { next=e.target.value; nextError = nextConfirmError = ''; }}
         invalid={nextError !== ''}
         error-message={nextError || undefined}
       />
@@ -157,7 +157,7 @@
       <sp-textfield 
         type="password" 
         value={nextConfirm} 
-        on:input={(e:any)=> { nextConfirm=e.target.value; nextConfirmError = ''; }}
+        on:input={(e)=> { nextConfirm=e.target.value; nextConfirmError = ''; }}
         invalid={nextConfirmError !== ''}
         error-message={nextConfirmError || undefined}
       />

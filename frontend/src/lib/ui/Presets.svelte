@@ -47,7 +47,7 @@
 
 <div class="presets">
   <label>Size</label>
-  <sp-picker label="Size preset" value={selected} on:change={(e:any)=> { selected=e.target.value; applyPreset(); }}>
+  <sp-picker label="Size preset" value={selected} on:change={(e)=> { selected=e.target.value; applyPreset(); }}>
     {#each presets as p}
       <sp-menu-item value={p.id}>{p.name}</sp-menu-item>
     {/each}

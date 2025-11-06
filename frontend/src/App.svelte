@@ -145,14 +145,14 @@
       <h1>Photo Collage</h1>
       <div class="actions">
         {#if !loggedIn}
-          <sp-textfield placeholder="Email" type="email" value={email} on:input={(e:any)=> email=e.target.value} />
-          <sp-textfield placeholder="Password" type="password" value={password} on:input={(e:any)=> password=e.target.value} />
+          <sp-textfield placeholder="Email" type="email" value={email} on:input={(e)=> email=e.target.value} />
+          <sp-textfield placeholder="Password" type="password" value={password} on:input={(e)=> password=e.target.value} />
           {#if mode === 'login'}
             <sp-button variant="primary" on:click={doLogin}>Login</sp-button>
             <sp-button on:click={()=> mode='register'}>Register</sp-button>
             <sp-button on:click={()=> { showForgot = true; forgotEmail = email; }}>Forgot password?</sp-button>
           {:else}
-            <sp-textfield placeholder="Name (optional)" value={regName} on:input={(e:any)=> regName=e.target.value} />
+            <sp-textfield placeholder="Name (optional)" value={regName} on:input={(e)=> regName=e.target.value} />
             <sp-button variant="primary" on:click={doRegister}>Create Account</sp-button>
             <sp-button on:click={()=> mode='login'}>Back to Login</sp-button>
           {/if}
@@ -178,7 +178,7 @@
           placeholder="Email" 
           type="email" 
           value={forgotEmail} 
-          on:input={(e:any)=> { forgotEmail=e.target.value; forgotEmailError = ''; }}
+          on:input={(e)=> { forgotEmail=e.target.value; forgotEmailError = ''; }}
           invalid={forgotEmailError !== ''}
           error-message={forgotEmailError || undefined}
         />
@@ -196,7 +196,7 @@
         <sp-textfield 
           placeholder="Reset token" 
           value={resetToken} 
-          on:input={(e:any)=> { resetToken=e.target.value; resetTokenError = ''; }}
+          on:input={(e)=> { resetToken=e.target.value; resetTokenError = ''; }}
           invalid={resetTokenError !== ''}
           error-message={resetTokenError || undefined}
         />
@@ -204,7 +204,7 @@
           placeholder="New password (min 8 characters)" 
           type="password" 
           value={resetNew} 
-          on:input={(e:any)=> { resetNew=e.target.value; resetNewError = ''; }}
+          on:input={(e)=> { resetNew=e.target.value; resetNewError = ''; }}
           invalid={resetNewError !== ''}
           error-message={resetNewError || undefined}
         />

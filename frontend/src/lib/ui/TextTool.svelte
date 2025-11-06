@@ -28,9 +28,9 @@
 </script>
 
 <div class="text-tool">
-  <sp-textfield value={text} on:input={(e:any)=> text=e.target.value} placeholder="Add text"></sp-textfield>
-  <sp-number-field min="6" max="200" value={size} on:input={(e:any)=> size=parseInt(e.target.value)}></sp-number-field>
-  <input type="color" value={color} on:input={(e:any)=> color=e.target.value} />
+  <sp-textfield value={text} on:input={(e)=> text=e.target.value} placeholder="Add text"></sp-textfield>
+  <sp-number-field min="6" max="200" value={size} on:input={(e)=> size=parseInt(e.target.value)}></sp-number-field>
+  <input type="color" value={color} on:input={(e)=> color=e.target.value} />
   <sp-button variant="primary" on:click={addText}>Add Text</sp-button>
 </div>
 

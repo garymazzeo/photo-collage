@@ -38,7 +38,7 @@
 
 <div class="borders">
   <label>Border</label>
-  <sp-picker label="Select border" value={selected} on:change={(e:any)=>{ selected=e.target.value; applyBorder(); }}>
+  <sp-picker label="Select border" value={selected} on:change={(e)=>{ selected=e.target.value; applyBorder(); }}>
     {#each borders as b}
       <sp-menu-item value={b.id}>{b.name}</sp-menu-item>
     {/each}
