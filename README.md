@@ -229,21 +229,56 @@ The app uses PHP's `mail()` function for password reset emails. To check if it w
 
 ### Initial Server Setup
 
-Before first deployment, set up the directory structure on your VPS:
+Before first deployment, set up the directory structure on your VPS. **The base path (`VPS_PATH`) must exist and be owned by your SSH user.**
+
+#### Option 1: Directory in Your Home Directory (Recommended if no sudo)
+
+If your SSH user doesn't have sudo privileges, use a path in your home directory:
 
 ```bash
-# Create base directory structure
+# Use a path in your home directory (you already own this)
+VPS_PATH="$HOME/example.com/photo-collage"  # or any path you own
+SSH_USER="username"  # Your SSH username
+
+# Create directory structure (no sudo needed)
+mkdir -p $VPS_PATH/{releases,shared/uploads}
+
+# Verify ownership
+ls -la $VPS_PATH
+# Should show your SSH user as owner
+```
+
+#### Option 2: Ask VPS Admin to Set Up Directory
+
+If you need to use a system path like `/var/www/photo-collage`, ask your VPS administrator to:
+
+```bash
+# Admin runs these commands:
 sudo mkdir -p /var/www/photo-collage/{releases,shared/uploads}
-# Or if using custom path:
-sudo mkdir -p /home/user-name/example.com/photo-collage/{releases,shared/uploads}
+sudo chown -R your-ssh-user:your-ssh-user /var/www/photo-collage
+sudo chmod -R 755 /var/www/photo-collage
+```
 
-# Set ownership to your SSH user (replace 'your-user' with your actual SSH user)
-sudo chown -R your-user:your-user /var/www/photo-collage
-# Or for custom path:
-sudo chown -R your-user:your-user /home/user-name/example.com/photo-collage
+#### Option 3: Use Existing Directory You Own
 
-# Ensure SSH user can write to releases directory
-chmod -R 755 /var/www/photo-collage/releases
+If a directory already exists and you own it, just create the subdirectories:
+
+```bash
+# If the base path already exists and you own it:
+mkdir -p $VPS_PATH/{releases,shared/uploads}
+```
+
+**Important:** The workflow will fail if:
+
+- `VPS_PATH` doesn't exist
+- Your SSH user doesn't own `VPS_PATH` (check with `ls -la $VPS_PATH`)
+- Your SSH user can't create subdirectories in `VPS_PATH/releases`
+
+**To check ownership:**
+
+```bash
+ls -ld $VPS_PATH
+# The owner (3rd column) should be your SSH username
 ```
 
 ### GitHub Secrets

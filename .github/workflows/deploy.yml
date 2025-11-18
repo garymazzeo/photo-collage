@@ -42,14 +42,21 @@ jobs:
         run: |
           RSYNC_FLAGS="-az --delete --exclude .git --exclude node_modules --exclude frontend/node_modules"
           REMOTE=${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}
-          VPS_PATH=${{ secrets.VPS_PATH }}
+          VPS_PATH="${{ secrets.VPS_PATH }}"
+          if [ -z "$VPS_PATH" ]; then
+            echo "Error: VPS_PATH secret is not set or is empty"
+            exit 1
+          fi
           REL=${{ steps.prep.outputs.rel }}
           ENV_FILE="${{ secrets.ENV_FILE }}"
-          # Create directories (ensure base structure exists on server first)
-          ssh -o StrictHostKeyChecking=no $REMOTE "mkdir -p $VPS_PATH/releases/$REL $VPS_PATH/shared/uploads" || (echo "Error: Cannot create directories. Ensure $VPS_PATH exists and user has write permissions." && exit 1)
+          echo "Deploying to: $VPS_PATH"
+          # Verify base path exists and user has access
+          ssh -o StrictHostKeyChecking=no $REMOTE "test -d '$VPS_PATH' || (echo 'Error: Base path $VPS_PATH does not exist. Create it first with: sudo mkdir -p $VPS_PATH && sudo chown ${{ secrets.VPS_USER }}:${{ secrets.VPS_USER }} $VPS_PATH' && exit 1)"
+          # Create subdirectories (releases and shared must exist, we only create the release timestamp dir)
+          ssh -o StrictHostKeyChecking=no $REMOTE "mkdir -p '$VPS_PATH/releases/$REL' '$VPS_PATH/shared/uploads' || (echo 'Error: Cannot create directories in $VPS_PATH. Check permissions.' && exit 1)"
           rsync $RSYNC_FLAGS ./ $REMOTE:$VPS_PATH/releases/$REL/
           if [ -n "$ENV_FILE" ]; then
-            ssh $REMOTE "ENV_FILE='$ENV_FILE' bash $VPS_PATH/releases/$REL/deploy/scripts/post_deploy.sh $REL"
+            ssh $REMOTE "VPS_PATH='$VPS_PATH' ENV_FILE='$ENV_FILE' bash $VPS_PATH/releases/$REL/deploy/scripts/post_deploy.sh $REL"
           else
-            ssh $REMOTE "bash $VPS_PATH/releases/$REL/deploy/scripts/post_deploy.sh $REL"
+            ssh $REMOTE "VPS_PATH='$VPS_PATH' bash $VPS_PATH/releases/$REL/deploy/scripts/post_deploy.sh $REL"
           fi

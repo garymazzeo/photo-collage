@@ -19,8 +19,12 @@ fi
 # Symlink uploads if used later
 ln -snf "$VPS_PATH/shared/uploads" "$RELEASE_DIR/uploads"
 
-# Permissions
-chown -R www-data:www-data "$RELEASE_DIR"
+# Permissions (only if user has sudo/root, otherwise skip)
+# Note: If running as non-root, files will be owned by the SSH user
+# Apache/PHP-FPM may need read access - configure via group permissions or ask admin
+if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+  sudo chown -R www-data:www-data "$RELEASE_DIR" 2>/dev/null || true
+fi
 
 # Swap current symlink atomically
 ln -sfn "$RELEASE_DIR" "$VPS_PATH/current"
