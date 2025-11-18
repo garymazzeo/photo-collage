@@ -31,21 +31,63 @@ Database:
 ## Backend
 
 - Create MySQL DB and user, then run `sql/schema.sql`.
-- Configure environment via server env vars (recommended) or `config/.env` symlinked from `/var/www/photo-collage/shared/.env` in production.
-- Apache DocumentRoot: `/var/www/photo-collage/current/public`
+  qqq- Configure environment via server env vars (recommended) or `config/.env` symlinked from your `VPS_PATH/shared/.env` in production.
 
-### Apache vhost example
+### Apache Configuration
 
-```
+**CRITICAL:** Apache's `DocumentRoot` must point to the `public` subdirectory, not the project root.
+
+#### Option 1: VirtualHost Configuration (Recommended)
+
+Edit your Apache site configuration (usually in `/etc/apache2/sites-available/`):
+
+```apache
 <VirtualHost *:80>
-    ServerName your-domain
-    DocumentRoot /var/www/photo-collage/current/public
-    <Directory /var/www/photo-collage/current/public>
+    ServerName your-domain.com
+    # IMPORTANT: Point to the 'public' subdirectory
+    DocumentRoot /home/username/example.com/photo-collage/current/public
+
+    <Directory /home/username/example.com/photo-collage/current/public>
         AllowOverride All
         Require all granted
+        Options -Indexes  # Disable directory listings
     </Directory>
+
+    # Optional: Logging
+    ErrorLog ${APACHE_LOG_DIR}/photo-collage-error.log
+    CustomLog ${APACHE_LOG_DIR}/photo-collage-access.log combined
 </VirtualHost>
 ```
+
+Then enable the site:
+
+```bash
+sudo a2ensite your-site-config-name
+sudo systemctl reload apache2
+```
+
+#### Option 2: .htaccess in Project Root (If you can't edit vhost)
+
+If you can't modify the VirtualHost, create a `.htaccess` in your project root (`$VPS_PATH/current/.htaccess`):
+
+```apache
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ /public/$1 [L]
+```
+
+**Note:** This is less secure and less efficient than setting DocumentRoot correctly.
+
+#### Verify Configuration
+
+After configuring, test:
+
+1. Visit `http://your-domain.com` - should show the app, not a directory listing
+2. Check browser console for any 404 errors on `/assets/index.js` or `/assets/style.css`
+3. If you see a white screen, check:
+   - Are assets built? (`ls $VPS_PATH/current/public/assets/`)
+   - Is DocumentRoot correct? (`apache2ctl -S` shows DocumentRoot)
+   - Is mod_rewrite enabled? (`sudo a2enmod rewrite`)
 
 ## Environment Variables
 
