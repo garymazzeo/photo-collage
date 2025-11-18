@@ -45,7 +45,8 @@ jobs:
           VPS_PATH=${{ secrets.VPS_PATH }}
           REL=${{ steps.prep.outputs.rel }}
           ENV_FILE="${{ secrets.ENV_FILE }}"
-          ssh -o StrictHostKeyChecking=no $REMOTE "mkdir -p $VPS_PATH/releases/$REL $VPS_PATH/shared/uploads"
+          # Create directories (ensure base structure exists on server first)
+          ssh -o StrictHostKeyChecking=no $REMOTE "mkdir -p $VPS_PATH/releases/$REL $VPS_PATH/shared/uploads" || (echo "Error: Cannot create directories. Ensure $VPS_PATH exists and user has write permissions." && exit 1)
           rsync $RSYNC_FLAGS ./ $REMOTE:$VPS_PATH/releases/$REL/
           if [ -n "$ENV_FILE" ]; then
             ssh $REMOTE "ENV_FILE='$ENV_FILE' bash $VPS_PATH/releases/$REL/deploy/scripts/post_deploy.sh $REL"

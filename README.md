@@ -227,10 +227,39 @@ The app uses PHP's `mail()` function for password reset emails. To check if it w
 
 ## CI/CD
 
-- Set GitHub secrets: `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`, `VPS_PATH`.
-- Optional: Set `ENV_FILE` secret to use a custom `.env` location (e.g., `/home/user-name/config/.env`)
-- Push to `main` to deploy. Release is rsynced to `releases/<timestamp>` and `current` symlink is switched.
-- Server should have `/var/www/photo-collage/{current,releases,shared}`.
+### Initial Server Setup
+
+Before first deployment, set up the directory structure on your VPS:
+
+```bash
+# Create base directory structure
+sudo mkdir -p /var/www/photo-collage/{releases,shared/uploads}
+# Or if using custom path:
+sudo mkdir -p /home/user-name/example.com/photo-collage/{releases,shared/uploads}
+
+# Set ownership to your SSH user (replace 'your-user' with your actual SSH user)
+sudo chown -R your-user:your-user /var/www/photo-collage
+# Or for custom path:
+sudo chown -R your-user:your-user /home/user-name/example.com/photo-collage
+
+# Ensure SSH user can write to releases directory
+chmod -R 755 /var/www/photo-collage/releases
+```
+
+### GitHub Secrets
+
+Set the following secrets in your GitHub repository (Settings → Secrets and variables → Actions):
+
+- `VPS_HOST` - Your VPS hostname or IP
+- `VPS_USER` - SSH username (must have write access to `VPS_PATH`)
+- `VPS_SSH_KEY` - Private SSH key for authentication
+- `VPS_PATH` - Base path on server (e.g., `/var/www/photo-collage` or `/home/user-name/example.com/photo-collage`)
+- `ENV_FILE` (optional) - Custom `.env` location (e.g., `/home/user-name/config/.env`)
+
+### Deployment
+
+- Push to `main` to deploy automatically, or use "Run workflow" for manual deployment
+- Release is rsynced to `releases/<timestamp>` and `current` symlink is switched atomically
 - **Environment setup:**
   - Use `ENV_FILE` secret for custom location, or
   - Place your `.env` in `shared/.env` before first deploy, or
