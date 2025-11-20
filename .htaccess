@@ -1,7 +1,18 @@
+# Disable directory listings
+Options -Indexes
+
 # Redirect to public directory if DocumentRoot is not set correctly
 RewriteEngine On
+
+# If accessing root of this directory, redirect to public
+RewriteCond %{REQUEST_URI} ^/?$
+RewriteRule ^$ public/ [L,R=301]
+
+# Route all requests to public directory (except assets, api, and public itself)
 RewriteCond %{REQUEST_URI} !^/public/
 RewriteCond %{REQUEST_URI} !^/assets/
 RewriteCond %{REQUEST_URI} !^/api/
-RewriteRule ^(.*)$ /public/$1 [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/$1 [L]
 

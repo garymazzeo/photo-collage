@@ -66,28 +66,78 @@ sudo a2ensite your-site-config-name
 sudo systemctl reload apache2
 ```
 
-#### Option 2: .htaccess in Project Root (If you can't edit vhost)
+#### Option 2: .htaccess Method (If you can't edit vhost)
 
-If you can't modify the VirtualHost, create a `.htaccess` in your project root (`$VPS_PATH/current/.htaccess`):
+If you can't modify the VirtualHost, the project includes a root-level `.htaccess` that redirects to `public/`. However, you need to ensure:
 
-```apache
-RewriteEngine On
-RewriteCond %{REQUEST_URI} !^/public/
-RewriteRule ^(.*)$ /public/$1 [L]
-```
+1. **mod_rewrite is enabled** (ask your admin or check):
 
-**Note:** This is less secure and less efficient than setting DocumentRoot correctly.
+   ```bash
+   # Check if enabled
+   apache2ctl -M | grep rewrite
+   # If not enabled, ask admin to run: sudo a2enmod rewrite
+   ```
 
-#### Verify Configuration
+2. **AllowOverride is set** in the parent directory's Apache config (ask your admin):
 
-After configuring, test:
+   ```apache
+   <Directory /path/to/parent/of/photo-collage>
+       AllowOverride All
+   </Directory>
+   ```
 
-1. Visit `http://your-domain.com` - should show the app, not a directory listing
-2. Check browser console for any 404 errors on `/assets/index.js` or `/assets/style.css`
-3. If you see a white screen, check:
-   - Are assets built? (`ls $VPS_PATH/current/public/assets/`)
-   - Is DocumentRoot correct? (`apache2ctl -S` shows DocumentRoot)
-   - Is mod_rewrite enabled? (`sudo a2enmod rewrite`)
+3. **Place .htaccess in the right location:**
+   - If DocumentRoot is `$VPS_PATH/current`, the `.htaccess` should be at `$VPS_PATH/current/.htaccess` (already deployed)
+   - If DocumentRoot is `$VPS_PATH`, you may need a `.htaccess` at `$VPS_PATH/.htaccess` that redirects to `current/public/`
+
+**Note:** This is less secure and less efficient than setting DocumentRoot correctly. The ideal setup is DocumentRoot pointing directly to `$VPS_PATH/current/public`.
+
+#### Troubleshooting
+
+**If you see "Index of /photo-collage/current" (directory listing):**
+
+1. **Check if mod_rewrite is enabled:**
+
+   ```bash
+   # On your VPS (or ask admin)
+   apache2ctl -M | grep rewrite
+   # If not listed, mod_rewrite is disabled - ask admin to enable it
+   ```
+
+2. **Check if .htaccess is being read:**
+
+   - Add a syntax error to `.htaccess` temporarily - Apache should show an error if it's reading it
+   - Check Apache error logs: `tail -f /var/log/apache2/error.log`
+
+3. **Verify .htaccess location:**
+
+   ```bash
+   # Should exist at:
+   ls -la $VPS_PATH/current/.htaccess
+   ls -la $VPS_PATH/current/public/.htaccess
+   ```
+
+4. **Check Apache configuration allows .htaccess:**
+   - Ask your admin to verify `AllowOverride All` is set for your directory
+   - Or check if you can create a test `.htaccess` with `Options -Indexes` to disable listings
+
+**If you see a white screen:**
+
+1. Check browser console (F12) for errors
+2. Verify assets exist:
+   ```bash
+   ls -la $VPS_PATH/current/public/assets/
+   # Should show index.js and style.css
+   ```
+3. Check if assets are loading:
+   - Visit `http://your-domain.com/assets/index.js` directly
+   - Should show JavaScript code, not 404
+
+**If you get 404 on `/current`:**
+
+- This means DocumentRoot is at a parent level
+- The `.htaccess` in the project root should redirect, but if it's not working, you may need a `.htaccess` at the DocumentRoot level
+- Ask your admin what the DocumentRoot path is: `apache2ctl -S | grep DocumentRoot`
 
 ## Environment Variables
 
