@@ -31,7 +31,7 @@ Database:
 ## Backend
 
 - Create MySQL DB and user, then run `sql/schema.sql`.
-  qqq- Configure environment via server env vars (recommended) or `config/.env` symlinked from your `VPS_PATH/shared/.env` in production.
+- Configure environment via server env vars (recommended) or `config/.env` symlinked from your `VPS_PATH/shared/.env` in production.
 
 ### Apache Configuration
 
