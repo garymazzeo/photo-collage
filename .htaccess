@@ -6,13 +6,13 @@ RewriteEngine On
 
 # If accessing root of this directory, redirect to public
 RewriteCond %{REQUEST_URI} ^/?$
-RewriteRule ^$ public/ [L,R=301]
+RewriteRule ^$ photo-collage/public/ [L,R=301]
 
 # Route all requests to public directory (except assets, api, and public itself)
-RewriteCond %{REQUEST_URI} !^/public/
-RewriteCond %{REQUEST_URI} !^/assets/
-RewriteCond %{REQUEST_URI} !^/api/
+RewriteCond %{REQUEST_URI} !^/photo-collage/public/
+RewriteCond %{REQUEST_URI} !^/photo-collage/assets/
+RewriteCond %{REQUEST_URI} !^/photo-collage/api/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ public/$1 [L]
+RewriteRule ^(.*)$ photo-collage/public/$1 [L]
 
